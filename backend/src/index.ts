@@ -19,3 +19,4 @@ console.log(graph.getFriends(1));
 console.log(graph.getFriends(3));
 console.log(graph.getMutualFriends(1,2));
 console.log(graph.getMutualFriends(1,4));
+console.log(graph.getCandidates(1));

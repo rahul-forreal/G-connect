@@ -26,20 +26,37 @@ export class SocialGraph{
         const friends1=this.friendships.get(user1);
         const friends2=this.friendships.get(user2);
         if(!friends1 || !friends2)return new Set();
-        const ans=new Set<number>();
+        const mutualFriends=new Set<number>();
         if(friends1.size > friends2.size){
             for(const friend of friends2){
                 if(friends1.has(friend)){
-                    ans.add(friend);
+                    mutualFriends.add(friend);
                 }
             }
         }else{
             for(const friend of friends1){
                 if(friends2.has(friend)){
-                    ans.add(friend);
+                    mutualFriends.add(friend);
                 }
             }
         }
-        return ans;
+        return mutualFriends;
+    }
+    getCandidates(userId:number):Set<number>{
+        const friendList=this.friendships?.get(userId);
+        const candidates=new Set<number>();
+        if(!friendList)return new Set();
+        for(const friend of friendList){
+            const friendOfFriend=this.friendships.get(friend);
+            if(!friendOfFriend)continue;
+            for(const candiFriend of friendOfFriend){
+                candidates.add(candiFriend);
+            }
+        }
+        candidates.delete(userId);
+        for(const friend of friendList){
+            candidates.delete(friend);
+        }
+        return candidates;
     }
 }
