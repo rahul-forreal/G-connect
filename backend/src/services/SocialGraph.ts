@@ -21,5 +21,25 @@ export class SocialGraph{
     }
     getFriends(userId:number):Set<number>{
         return this.friendships.get(userId) ?? new Set();
-    }   
+    }
+    getMutualFriends(user1:number,user2:number):Set<number>{
+        const friends1=this.friendships.get(user1);
+        const friends2=this.friendships.get(user2);
+        if(!friends1 || !friends2)return new Set();
+        const ans=new Set<number>();
+        if(friends1.size > friends2.size){
+            for(const friend of friends2){
+                if(friends1.has(friend)){
+                    ans.add(friend);
+                }
+            }
+        }else{
+            for(const friend of friends1){
+                if(friends2.has(friend)){
+                    ans.add(friend);
+                }
+            }
+        }
+        return ans;
+    }
 }
