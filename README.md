@@ -8,7 +8,7 @@ A graph-based social recommendation engine inspired by LinkedIn's "People You Ma
 - Friend Connections
 - Mutual Friend Detection
 - Friends of Friends Candidate Generation
-- Interest Similarity
+- Interest Similarity (Jaccard Similarity)
 - Recommendation Ranking
 
 ## Tech Stack
