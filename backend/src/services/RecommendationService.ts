@@ -1,6 +1,5 @@
 import {SocialGraph} from "./SocialGraph"
 import {Recommendation} from "../models/Recommendation"
-
 export class RecommendationService{
     constructor(
         private graph:SocialGraph
@@ -30,6 +29,10 @@ export class RecommendationService{
         }
         return common/union.size;
     }
+    private calculateFinalScore(mutualScore:number,interestScore:number):number{
+        const finalScore=0.7*mutualScore+0.3*interestScore;
+        return finalScore;
+    }
     recommendUsers(userId:number):Recommendation[]{
         const candidates=this.graph.getCandidates(userId);
         const recommendations : Recommendation[]=[];
@@ -38,7 +41,7 @@ export class RecommendationService{
             if(!user)continue;
             const mutualScore=this.graph.getMutualFriends(userId,candidate).size;
             const interestScore=this.calculateInterestScore(userId,candidate);
-            const finalScore=0.7*mutualScore+0.3*interestScore;
+            const finalScore=this.calculateFinalScore(mutualScore,interestScore);
             recommendations.push({user,mutualFriends:mutualScore,interestSimilarity:interestScore,finalScore});
         }
         recommendations.sort((a,b)=>b.finalScore-a.finalScore);
