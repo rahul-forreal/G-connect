@@ -1,9 +1,10 @@
 import express from "express";
- const app=express();
- app.use(express.json());
- app.get("/",(req,res)=>{
-    res.json({
-        message:"Graph recommendation engine API"
-    });
- });
- export default app;
+import userRoutes from "./routes/UserRoutes";
+
+const app = express();
+
+app.use(express.json());
+
+app.use(userRoutes);
+
+export default app;

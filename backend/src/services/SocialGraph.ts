@@ -62,4 +62,44 @@ export class SocialGraph{
         }
         return candidates;
     }
+    getAllUsers(): User[] {
+        return Array.from(this.users.values());
+    }
+
+    removeUser(userId: number): void {
+        if (!this.users.has(userId)) {
+            throw new Error("User not found");
+        }
+
+        this.users.delete(userId);
+
+        const friends = this.friendships.get(userId);
+
+        if (friends) {
+            for (const friend of friends) {
+                this.friendships.get(friend)?.delete(userId);
+            }
+        }
+
+        this.friendships.delete(userId);
+    }
+
+    updateUser(
+        userId: number,
+        updates: Partial<Pick<User, "name" | "email">>
+    ): void {
+        const user = this.users.get(userId);
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        if (updates.name !== undefined) {
+            user.name = updates.name;
+        }
+
+        if (updates.email !== undefined) {
+            user.email = updates.email;
+        }
+    }
 }
