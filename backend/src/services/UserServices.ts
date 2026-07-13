@@ -1,16 +1,26 @@
 import { User } from "../models/User";
 import { SocialGraph } from "./SocialGraph";
+import {UserRepository} from "../repositories/UserRepository"
 
 export class UserService {
-    constructor(private graph: SocialGraph) {}
+    constructor(private graph: SocialGraph,private userRepository: UserRepository) {}
 
-    createUser(id: number, name: string, email: string): void {
-        if (this.graph.getUser(id)) {
+    async createUser(
+        name: string,
+        email: string
+    ): Promise<void> {
+
+        const existing =
+            await this.userRepository.findByEmail(email);
+
+        if (existing) {
             throw new Error("User already exists");
         }
 
-        const user = new User(id, name, email);
-        this.graph.addUser(user);
+        await this.userRepository.create(
+            name,
+            email
+        );
     }
     getUser(userId: number): User | undefined {
         return this.graph.getUser(userId);

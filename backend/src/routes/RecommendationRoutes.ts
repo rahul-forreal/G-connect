@@ -5,4 +5,4 @@ const router = Router()
 
 router.get("/user/:id/recommendations",recommendationController.getRecommendation);
 
-export default router;
+export default router;  

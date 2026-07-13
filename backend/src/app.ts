@@ -1,4 +1,5 @@
 import express from "express";
+import "dotenv/config";
 import userRoutes from "./routes/UserRoutes";
 import friendshipRoutes from "./routes/FriendshipRoutes";
 import recommendationRoutes from "./routes/RecommendationRoutes"

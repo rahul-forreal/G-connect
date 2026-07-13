@@ -4,20 +4,32 @@ import { UserService } from "../services/UserServices";
 export class UserController {
     constructor(private userService: UserService) {}
 
-    createUser = (req: Request, res: Response): void => {
-        try {
-            const { id, name, email } = req.body;
+    createUser = async (
+        req: Request,
+        res: Response
+    ): Promise<void> => {
 
-            this.userService.createUser(id, name, email);
+        try {
+
+            const { name, email } = req.body;
+
+            await this.userService.createUser(
+                name,
+                email
+            );
 
             res.status(201).json({
                 message: "User created successfully"
             });
+
         } catch (error) {
+
             res.status(409).json({
                 error: (error as Error).message
             });
+
         }
+
     };
 
     getAllUsers = (_req: Request, res: Response): void => {
