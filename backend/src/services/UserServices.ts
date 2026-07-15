@@ -1,8 +1,10 @@
 import { UserRepository } from "../repositories/UserRepository";
+import { InterestRepository } from "../repositories/InterestRepository";
 
 export class UserService {
     constructor(
-        private userRepository: UserRepository
+        private userRepository: UserRepository,
+        private interestRepository: InterestRepository
     ) {}
 
     async createUser(name: string, email: string): Promise<void> {
@@ -53,5 +55,47 @@ export class UserService {
         }
 
         await this.userRepository.delete(id);
+    }
+
+    async addInterest(
+        userId: number,
+        interestName: string
+    ): Promise<void> {
+        const user = await this.userRepository.findById(userId);
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        await this.interestRepository.addInterest(
+            userId,
+            interestName
+        );
+    }
+
+    async removeInterest(
+        userId: number,
+        interestName: string
+    ): Promise<void> {
+        const user = await this.userRepository.findById(userId);
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        await this.interestRepository.removeInterest(
+            userId,
+            interestName
+        );
+    }
+
+    async getUserInterests(userId: number): Promise<Set<string>> {
+        const user = await this.userRepository.findById(userId);
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        return await this.interestRepository.getUserInterests(userId);
     }
 }

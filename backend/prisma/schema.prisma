@@ -8,9 +8,26 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  userInterests UserInterest[]
+}
+
+model Interest {
+  id            Int            @id @default(autoincrement())
+  name          String         @unique
+  userInterests UserInterest[]
+}
+
+model UserInterest {
+  userId     Int
+  interestId Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([userId, interestId])
+  @@index([interestId])
 }

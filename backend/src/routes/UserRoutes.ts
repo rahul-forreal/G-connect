@@ -13,4 +13,10 @@ router.patch("/users/:id", userController.updateUser);
 
 router.delete("/users/:id", userController.deleteUser);
 
+router.post("/users/:id/interests",userController.addInterest);
+
+router.delete("/users/:id/interests",userController.removeInterest);
+
+router.get("/users/:id/interests",userController.getUserInterests);
+
 export default router;

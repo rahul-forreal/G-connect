@@ -8,11 +8,16 @@ import { RecommendationController } from "../controllers/RecommendationControlle
 
 import { UserRepository } from "../repositories/UserRepository";
 import { FriendshipRepository } from "../repositories/FriendshipRepository";
+import { InterestRepository } from "../repositories/InterestRepository";
 
 const userRepository = new UserRepository();
 const friendshipRepository = new FriendshipRepository();
+const interestRepository = new InterestRepository();
 
-const userService = new UserService(userRepository);
+const userService = new UserService(
+    userRepository,
+    interestRepository
+);
 
 const friendshipService = new FriendshipService(
     friendshipRepository,userRepository
@@ -20,7 +25,8 @@ const friendshipService = new FriendshipService(
 
 const recommendationService = new RecommendationService(
     userRepository,
-    friendshipRepository
+    friendshipRepository,
+    interestRepository
 );
 
 const userController = new UserController(userService);
@@ -36,6 +42,7 @@ const recommendationController = new RecommendationController(
 export {
     userRepository,
     friendshipRepository,
+    interestRepository,
     userService,
     friendshipService,
     recommendationService,

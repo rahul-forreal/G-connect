@@ -96,4 +96,60 @@ export class UserController {
             });
         }
     };
+    addInterest = async (
+        req: Request,
+        res: Response
+    ): Promise<void> => {
+        try {
+            await this.userService.addInterest(
+                Number(req.params.id),
+                req.body.interest
+            );
+
+            res.status(201).json({
+                message: "Interest added successfully"
+            });
+        } catch (error) {
+            res.status(400).json({
+                error: (error as Error).message
+            });
+        }
+    };
+
+    removeInterest = async (
+        req: Request,
+        res: Response
+    ): Promise<void> => {
+        try {
+            await this.userService.removeInterest(
+                Number(req.params.id),
+                req.body.interest
+            );
+
+            res.status(200).json({
+                message: "Interest removed successfully"
+            });
+        } catch (error) {
+            res.status(400).json({
+                error: (error as Error).message
+            });
+        }
+    };
+
+    getUserInterests = async (
+        req: Request,
+        res: Response
+    ): Promise<void> => {
+        try {
+            const interests = await this.userService.getUserInterests(
+                Number(req.params.id)
+            );
+
+            res.status(200).json(Array.from(interests));
+        } catch (error) {
+            res.status(400).json({
+                error: (error as Error).message
+            });
+        }
+    };
 }
