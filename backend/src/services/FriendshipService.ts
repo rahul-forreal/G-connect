@@ -1,37 +1,45 @@
-import { SocialGraph } from "./SocialGraph";
+import { FriendshipRepository } from "../repositories/FriendshipRepository";
+import { UserRepository } from "../repositories/UserRepository";
 
 export class FriendshipService {
-    constructor(private graph: SocialGraph) {}
+    constructor(
+        private friendshipRepository: FriendshipRepository,
+        private userRepository: UserRepository
+    ) {}
 
-    addFriend(user1: number, user2: number): void {
-        if (!this.graph.getUser(user1) || !this.graph.getUser(user2)) {
+    async addFriend(user1: number, user2: number): Promise<void> {
+        if (user1 === user2) {
+            throw new Error("User cannot add themselves as a friend");
+        }
+
+        const firstUser = await this.userRepository.findById(user1);
+        const secondUser = await this.userRepository.findById(user2);
+
+        if (!firstUser || !secondUser) {
             throw new Error("User not found");
         }
 
-        this.graph.addFriend(user1, user2);
+        await this.friendshipRepository.createUserNode(user1);
+        await this.friendshipRepository.createUserNode(user2);
+
+        await this.friendshipRepository.addFriend(user1, user2);
     }
 
-    removeFriend(user1: number, user2: number): void {
-        if (!this.graph.getUser(user1) || !this.graph.getUser(user2)) {
-            throw new Error("User not found");
-        }
-
-        this.graph.removeFriend(user1, user2);
+    async removeFriend(user1: number, user2: number): Promise<void> {
+        await this.friendshipRepository.removeFriend(user1, user2);
     }
 
-    getFriends(userId: number): number[] {
-        if (!this.graph.getUser(userId)) {
-            throw new Error("User not found");
-        }
-
-        return Array.from(this.graph.getFriends(userId));
+    async getFriends(userId: number): Promise<number[]> {
+        return await this.friendshipRepository.getFriends(userId);
     }
 
-    getMutualFriends(user1: number, user2: number): number[] {
-        if (!this.graph.getUser(user1) || !this.graph.getUser(user2)) {
-            throw new Error("User not found");
-        }
-
-        return Array.from(this.graph.getMutualFriends(user1, user2));
+    async getMutualFriends(
+        user1: number,
+        user2: number
+    ): Promise<number[]> {
+        return await this.friendshipRepository.getMutualFriends(
+            user1,
+            user2
+        );
     }
 }

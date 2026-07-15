@@ -22,6 +22,7 @@
     "@prisma/client": "^6.19.3",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "neo4j-driver": "^6.2.0",
     "prisma": "^6.19.3"
   }
 }

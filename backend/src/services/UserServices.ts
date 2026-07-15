@@ -1,63 +1,57 @@
-import { User } from "../models/User";
-import { SocialGraph } from "./SocialGraph";
-import {UserRepository} from "../repositories/UserRepository"
+import { UserRepository } from "../repositories/UserRepository";
 
 export class UserService {
-    constructor(private graph: SocialGraph,private userRepository: UserRepository) {}
+    constructor(
+        private userRepository: UserRepository
+    ) {}
 
-    async createUser(
-        name: string,
-        email: string
-    ): Promise<void> {
-
-        const existing =
-            await this.userRepository.findByEmail(email);
+    async createUser(name: string, email: string): Promise<void> {
+        const existing = await this.userRepository.findByEmail(email);
 
         if (existing) {
             throw new Error("User already exists");
         }
 
-        await this.userRepository.create(
-            name,
-            email
-        );
-    }
-    getUser(userId: number): User | undefined {
-        return this.graph.getUser(userId);
+        await this.userRepository.create(name, email);
     }
 
-    getAllUsers(): User[] {
-        return this.graph.getAllUsers();
-    }
-
-    updateUser(
-        userId: number,
-        updates: Partial<Pick<User, "name" | "email">>
-    ): void {
-        this.graph.updateUser(userId, updates);
-    }
-
-    deleteUser(userId: number): void {
-        this.graph.removeUser(userId);
-    }
-
-    addInterest(userId: number, interest: string): void {
-        const user = this.graph.getUser(userId);
+    async getUser(id: number) {
+        const user = await this.userRepository.findById(id);
 
         if (!user) {
             throw new Error("User not found");
         }
 
-        user.addInterest(interest);
+        return user;
     }
 
-    removeInterest(userId: number, interest: string): void {
-        const user = this.graph.getUser(userId);
+    async getAllUsers() {
+        return await this.userRepository.findAll();
+    }
+
+    async updateUser(
+        id: number,
+        data: {
+            name?: string;
+            email?: string;
+        }
+    ) {
+        const user = await this.userRepository.findById(id);
 
         if (!user) {
             throw new Error("User not found");
         }
 
-        user.removeInterest(interest);
+        return await this.userRepository.update(id, data);
+    }
+
+    async deleteUser(id: number): Promise<void> {
+        const user = await this.userRepository.findById(id);
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        await this.userRepository.delete(id);
     }
 }
