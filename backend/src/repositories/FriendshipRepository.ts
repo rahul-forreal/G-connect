@@ -92,6 +92,55 @@ export class FriendshipRepository {
         }
 
     }
+    async getMutualFriendCounts(
+        userId: number,
+        candidateIds: number[]
+    ): Promise<Map<number, number>> {
+
+        const session = driver.session();
+
+        try {
+
+            const result = await session.run(
+                `
+                MATCH (u:User {id:$userId})
+
+                UNWIND $candidateIds AS candidateId
+
+                MATCH (candidate:User {id:candidateId})
+
+                OPTIONAL MATCH
+                    (u)-[:FRIEND]->(mutual:User)<-[:FRIEND]-(candidate)
+
+                RETURN candidateId,
+                    COUNT(DISTINCT mutual) AS mutualCount
+                `,
+                {
+                    userId,
+                    candidateIds,
+                }
+            );
+
+            const map = new Map<number, number>();
+
+            for (const record of result.records) {
+
+                map.set(
+                    Number(record.get("candidateId")),
+                    Number(record.get("mutualCount"))
+                );
+
+            }
+
+            return map;
+
+        } finally {
+
+            await session.close();
+
+        }
+
+    }
     async removeFriend(
         user1: number,
         user2: number
@@ -124,31 +173,68 @@ export class FriendshipRepository {
         }
 
     }
+    
     async getCandidates(userId: number): Promise<number[]> {
+        console.log("userId type:", typeof userId);
+        console.log("userId value:", userId);
+        console.log("=== INSIDE getCandidates ===");
+        console.log("URI:", process.env.NEO4J_URI);
+        console.log("User:", userId);
         const session = driver.session();
 
         try {
-            const result = await session.run(
-                `
+            const query = `
                 MATCH (u:User {id:$userId})-[:FRIEND]->(:User)-[:FRIEND]->(candidate:User)
-
                 WHERE candidate.id <> $userId
-
                 AND NOT (u)-[:FRIEND]->(candidate)
-
                 RETURN DISTINCT candidate.id AS id
-                `,
-                {
-                    userId,
-                }
-            );
+            `;
 
-            return result.records.map(record =>
-                Number(record.get("id"))
-            );
+            console.log("Running query for user:", userId);
 
+            const result = await session.run(query, { userId });
+
+            console.log("Raw record count:", result.records.length);
+
+            const first = result.records.at(0);
+            if (first) {
+                console.log(first.toObject());
+            }
+
+            return result.records.map(record => Number(record.get("id")));
         } finally {
             await session.close();
         }
     }
+    // async getCandidates(userId: number): Promise<number[]> {
+    //     const session = driver.session();
+
+    //     try {
+    //         const result = await session.run(
+    //             `
+    //             MATCH (u:User {id:$userId})-[:FRIEND]->(:User)-[:FRIEND]->(candidate:User)
+
+    //             WHERE candidate.id <> $userId
+
+    //             AND NOT (u)-[:FRIEND]->(candidate)
+
+    //             RETURN DISTINCT candidate.id AS id
+    //             `,
+    //             {
+    //                 userId,
+    //             }
+    //         );
+    //         console.log(
+    //             "Neo4j records:",
+    //             result.records.length
+    //         );
+
+    //         return result.records.map(record =>
+    //             Number(record.get("id"))
+    //         );
+
+    //     } finally {
+    //         await session.close();
+    //     }
+    // }
 }

@@ -18,6 +18,15 @@ export class UserRepository {
             },
         });
     }
+    async findByIds(ids: number[]): Promise<User[]> {
+        return prisma.user.findMany({
+            where: {
+                id: {
+                    in: ids,
+                },
+            },
+        });
+    }
 
     async findByEmail(email: string): Promise<User | null> {
         return prisma.user.findUnique({

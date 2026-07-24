@@ -70,4 +70,32 @@ export class InterestRepository {
             )
         );
     }
+    async getUserInterestsMap(
+        userIds: number[]
+    ): Promise<Map<number, Set<string>>> {
+
+        const rows = await prisma.userInterest.findMany({
+            where: {
+                userId: {
+                    in: userIds,
+                },
+            },
+            include: {
+                interest: true,
+            },
+        });
+
+        const map = new Map<number, Set<string>>();
+
+        for (const row of rows) {
+
+            if (!map.has(row.userId)) {
+                map.set(row.userId, new Set());
+            }
+
+            map.get(row.userId)!.add(row.interest.name);
+        }
+
+        return map;
+    }
 }
