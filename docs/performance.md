@@ -21,7 +21,7 @@ Latency: ~2500 ms
 Requests/sec: ~6
 Latency: ~1600 ms
 
-### After Batch Query Optimization
+### After Batch Query Optimizations
 
 Requests/sec: ~25
 Latency: ~399 ms
