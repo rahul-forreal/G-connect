@@ -42,6 +42,36 @@ export class FriendRequestRepository {
         });
     }
 
+    async findPendingForReceiver(
+        requestId: number,
+        receiverId: number
+    ): Promise<FriendRequest | null> {
+
+        return prisma.friendRequest.findFirst({
+            where: {
+                id: requestId,
+                receiverId,
+                status: FriendRequestStatus.PENDING,
+            },
+        });
+
+    }
+
+    async findReversePending(
+        senderId: number,
+        receiverId: number
+    ): Promise<FriendRequest | null> {
+
+        return prisma.friendRequest.findFirst({
+            where: {
+                senderId: receiverId,
+                receiverId: senderId,
+                status: FriendRequestStatus.PENDING,
+            },
+        });
+
+    }
+
     async getIncomingRequests(
         userId: number
     ): Promise<FriendRequest[]> {
