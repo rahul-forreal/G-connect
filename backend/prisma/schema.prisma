@@ -7,27 +7,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 model User {
-  id            Int            @id @default(autoincrement())
-  name          String
-  email         String         @unique
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  userInterests UserInterest[]
+  id               Int               @id @default(autoincrement())
+  name             String
+  email            String            @unique
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  userInterests    UserInterest[]
+
+  sentRequests     FriendRequest[]   @relation("SentRequests")
+  receivedRequests FriendRequest[]   @relation("ReceivedRequests")
 }
 
 model Interest {
   id            Int            @id @default(autoincrement())
   name          String         @unique
+
   userInterests UserInterest[]
 }
 
 model UserInterest {
   userId     Int
   interestId Int
+
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
 
   @@id([userId, interestId])
   @@index([interestId])
+}
+
+model FriendRequest {
+  id         Int                 @id @default(autoincrement())
+
+  senderId   Int
+  receiverId Int
+
+  status     FriendRequestStatus @default(PENDING)
+
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  sender     User @relation("SentRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User @relation("ReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@index([receiverId])
+  @@index([senderId])
 }
