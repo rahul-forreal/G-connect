@@ -175,6 +175,12 @@ return Number(record.get("count")) > 0;
         }
 
     }
+    async createFriendship(
+        user1: number,
+        user2: number
+    ): Promise<void> {
+        await this.addFriend(user1, user2);
+    }
     async removeFriend(
         user1: number,
         user2: number
