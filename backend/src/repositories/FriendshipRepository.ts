@@ -60,6 +60,40 @@ export class FriendshipRepository {
             await session.close();
         }
     }
+    async areFriends(
+        user1: number,
+        user2: number
+    ): Promise<boolean> {
+
+        const session = driver.session();
+
+        try {
+
+            const result = await session.run(
+                `
+                MATCH (u1:User {id:$user1})-[:FRIEND]->(u2:User {id:$user2})
+                RETURN COUNT(*) AS count
+                `,
+                {
+                    user1,
+                    user2,
+                }
+            );
+
+            const record = result.records.at(0);
+            if (!record) {
+                return false;
+            }
+
+return Number(record.get("count")) > 0;
+
+        } finally {
+
+            await session.close();
+
+        }
+
+    }
     async getMutualFriends(
         user1: number,
         user2: number
@@ -140,6 +174,12 @@ export class FriendshipRepository {
 
         }
 
+    }
+    async createFriendship(
+        user1: number,
+        user2: number
+    ): Promise<void> {
+        await this.addFriend(user1, user2);
     }
     async removeFriend(
         user1: number,
