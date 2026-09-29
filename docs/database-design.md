@@ -1,8 +1,8 @@
 # Database design
 
 ## Entities
-1. User
-2. Interest
+1. Users
+2. Interests
 3. Community
 4. Friend requests
 
